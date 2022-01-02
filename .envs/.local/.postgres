@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=summers_api
+POSTGRES_USER=tNdPMRxbTRpVsihwrGotgPnzcvgsIUiL
+POSTGRES_PASSWORD=SlIGqC5Fk719q3wXUEm5UiLSK44lWiPxs3smSGCDwUSAh2w0esCvk9Z9NCu6Wp2Q
