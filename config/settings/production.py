@@ -41,7 +41,7 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/topics/security/#ssl-https
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-seconds
-# TODO: set this to 60 seconds first and then to 518400 once you prove the former works
+# TODO(summer): set this to 60 seconds first and then to 518400 once you prove the former works
 SECURE_HSTS_SECONDS = 60
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-include-subdomains
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
@@ -111,5 +111,8 @@ LOGGING = {
     },
 }
 
-DEFAULT_FILE_STORAGE = "summers_api.trakt.storage.ImgurFileStorage"
+DEFAULT_FILE_STORAGE = "summers_api.common.storage.CustomFileStorage"
+
+# Imgur API
 IMGUR_CLIENT_ID = env("IMGUR_CLIENT_ID")
+IMGUR_UPLOAD_ENDPOINT = env("IMGUR_UPLOAD_ENDPOINT")

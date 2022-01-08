@@ -2,3 +2,8 @@
 # ------------------------------------------------------------------------------
 USE_DOCKER=yes
 IPYTHONDIR=/app/.ipython
+
+# Imgur
+IMGUR_CLIENT_ID=
+IMGUR_CLIENT_SECRET=
+IMGUR_UPLOAD_ENDPOINT=https://api.imgur.com/3/upload/

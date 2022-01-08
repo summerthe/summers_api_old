@@ -10,10 +10,8 @@ ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 APPS_DIR = ROOT_DIR / "summers_api"
 env = environ.Env()
 
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
-if READ_DOT_ENV_FILE:
-    # OS environment variables take precedence over variables from .env
-    env.read_env(str(ROOT_DIR / ".env"))
+# OS environment variables take precedence over variables from .env
+env.read_env(str(ROOT_DIR / ".env"))
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -230,3 +228,17 @@ REST_FRAMEWORK = {
 CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# Imgur API
+# TODO(summer): Add all supported image formats
+IMGUR_SUPPORTED_FORMAT = [
+    # video formats
+    "video/mp4",
+    "video/webm",
+    "video/x-matroska",
+    "video/quicktime",
+    "video/x-flv",
+    "video/x-msvideo",
+    "video/x-ms-wmv",
+    "video/mpeg",
+]
