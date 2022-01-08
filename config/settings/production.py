@@ -110,3 +110,6 @@ LOGGING = {
         },
     },
 }
+
+DEFAULT_FILE_STORAGE = "summers_api.trakt.storage.ImgurFileStorage"
+IMGUR_CLIENT_ID = env("IMGUR_CLIENT_ID")
