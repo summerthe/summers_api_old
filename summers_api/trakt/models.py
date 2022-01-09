@@ -14,9 +14,10 @@ class Show(BaseModel):
 
     title = models.CharField(max_length=255, unique=True)
     thumbnail = models.ImageField(upload_to="thumbnails")
+    categories = models.ManyToManyField("Category", blank=True)
+
     guid = models.UUIDField(_("guid"), default=uuid.uuid4, editable=False)
     slug = models.SlugField(unique=True, editable=False)
-    categories = models.ManyToManyField("Category", blank=True)
 
     @property
     def total_episodes(self):

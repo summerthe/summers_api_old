@@ -4,7 +4,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 
-from .models import Show
+from summers_api.trakt.models import Show
 
 
 @receiver(pre_save, sender=Show)

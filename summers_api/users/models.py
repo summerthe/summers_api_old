@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +13,9 @@ class User(AbstractUser, BaseModel):
     username = last_name = first_name = None  # type: ignore
     name = models.CharField(_("Name of User"), max_length=255)
     email = models.EmailField(_("email address"), unique=True)
+
+    guid = models.UUIDField(_("guid"), default=uuid.uuid4, editable=False)
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 

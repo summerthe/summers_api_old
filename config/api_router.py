@@ -11,5 +11,6 @@ app_name = "api"
 urlpatterns = [
     path("", include("summers_api.users.api.urls")),
     path("", include("summers_api.trakt.api.urls")),
+    path("", include("summers_api.locker.api.urls")),
 ]
 urlpatterns += router.urls

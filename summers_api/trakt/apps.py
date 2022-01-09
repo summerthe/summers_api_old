@@ -10,7 +10,6 @@ class TraktConfig(AppConfig):
 
     def ready(self) -> None:
         from summers_api.trakt.models import Show
-
-        from .signals import slugify_show  # noqa E402
+        from summers_api.trakt.signals import slugify_show  # noqa E402
 
         pre_save.connect(slugify_show, sender=Show)
