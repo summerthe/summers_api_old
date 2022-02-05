@@ -48,8 +48,9 @@ class Folder(BaseModel):
     """Folder to hold notes within them."""
 
     title = models.CharField(max_length=255)
-    is_pinned = models.BooleanField(default=False)
+    is_pinned = models.BooleanField(default=False, blank=True)
     vault = models.ForeignKey(Vault, on_delete=models.CASCADE)
+    icon = models.ImageField(upload_to="note/folder-icons/", null=True, blank=True)
 
     guid = models.UUIDField(_("guid"), default=uuid.uuid4, editable=False)
     slug = models.SlugField(unique=True, editable=False)
@@ -81,10 +82,12 @@ class Note(BaseModel):
     title = models.CharField(max_length=255)
     description = models.TextField()
     type = models.CharField(max_length=10, choices=NOTE_TYPE_CHOICES)
-    is_pinned = models.BooleanField(default=False)
+    is_pinned = models.BooleanField(default=False, blank=True)
 
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category, blank=True)
+
+    bg_image = models.ImageField(upload_to="note/bg-images/", null=True, blank=True)
 
     guid = models.UUIDField(_("guid"), default=uuid.uuid4, editable=False)
 
