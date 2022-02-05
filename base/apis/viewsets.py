@@ -70,3 +70,12 @@ class BaseListDestroyModelViewSet(
     GenericViewSet,
 ):
     pass
+
+
+class BaseCreateListRetrieveModelViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    GenericViewSet,
+):
+    pass

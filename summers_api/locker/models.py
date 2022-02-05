@@ -13,6 +13,7 @@ User = get_user_model()
 class Category(BaseModel):
 
     title = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     guid = models.UUIDField(_("guid"), default=uuid.uuid4, editable=False)
     slug = models.SlugField(unique=True, editable=False)
@@ -30,6 +31,7 @@ class Vault(BaseModel):
     """Workspace like model for one user that contains all folders and notes."""
 
     title = models.CharField(max_length=255)
+    icon = models.ImageField(upload_to="note/vault-icons/", null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     guid = models.UUIDField(_("guid"), default=uuid.uuid4, editable=False)
@@ -79,9 +81,16 @@ class Note(BaseModel):
         (TRASH_NOTE_CHOICE, TRASH_NOTE_CHOICE),
     )
 
-    title = models.CharField(max_length=255)
+    title = models.CharField(
+        max_length=255,
+    )
     description = models.TextField()
-    type = models.CharField(max_length=10, choices=NOTE_TYPE_CHOICES)
+    type = models.CharField(
+        max_length=10,
+        choices=NOTE_TYPE_CHOICES,
+        default=DEFAULT_NOTE_CHOICE,
+        blank=True,
+    )
     is_pinned = models.BooleanField(default=False, blank=True)
 
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
@@ -90,6 +99,7 @@ class Note(BaseModel):
     bg_image = models.ImageField(upload_to="note/bg-images/", null=True, blank=True)
 
     guid = models.UUIDField(_("guid"), default=uuid.uuid4, editable=False)
+    slug = models.SlugField(unique=True, editable=False)
 
     class Meta:
         verbose_name = _("Note")

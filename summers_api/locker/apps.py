@@ -9,13 +9,15 @@ class LockerConfig(AppConfig):
     verbose_name = _("Locker")
 
     def ready(self) -> None:
-        from summers_api.locker.models import Category, Folder, Vault
+        from summers_api.locker.models import Category, Folder, Note, Vault
         from summers_api.locker.signals import (
             slugify_category,
             slugify_folder,
+            slugify_note,
             slugify_vault,
         )
 
         pre_save.connect(slugify_category, sender=Category)
         pre_save.connect(slugify_vault, sender=Vault)
         pre_save.connect(slugify_folder, sender=Folder)
+        pre_save.connect(slugify_note, sender=Note)

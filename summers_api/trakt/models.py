@@ -13,7 +13,7 @@ User = get_user_model()
 class Show(BaseModel):
 
     title = models.CharField(max_length=255, unique=True)
-    thumbnail = models.ImageField(upload_to="thumbnails")
+    thumbnail = models.ImageField(upload_to="trakt/thumbnails/")
     categories = models.ManyToManyField("Category", blank=True)
 
     guid = models.UUIDField(_("guid"), default=uuid.uuid4, editable=False)

@@ -24,12 +24,12 @@ class ShowModelViewSet(viewsets.BaseModelViewSet):
 
     Create: POST `/`
     List: GET `/`
-    Retrieve: GET `/<slug>/`
-    Destroy: DELETE `/<slug>/`
+    Retrieve: GET `/<pk>/`
+    Destroy: DELETE `/<pk>/`
     my: GET `/my/`
-    wishlist: POST `/<slug>/wishlist/`
-    season: PUT `/<slug>/season/`
-    Mark episode: POST `/<slug>/mark-episode/`
+    wishlist: POST `/<pk>/wishlist/`
+    season: PUT `/<pk>/season/`
+    Mark episode: PUT `/<pk>/mark-episode/`
     """
 
     parser_classes = (MultiPartParser, FormParser, JSONParser)
@@ -37,7 +37,6 @@ class ShowModelViewSet(viewsets.BaseModelViewSet):
     serializer_class = ShowDetailSerializer
     queryset = Show.objects.all()
     models = Show
-    lookup_field = "slug"
 
     def get_serializer_class(self):
         if self.action == "create":
