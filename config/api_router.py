@@ -12,5 +12,6 @@ urlpatterns = [
     path("", include("summers_api.users.api.urls")),
     path("trakt/", include("summers_api.trakt.api.urls")),
     path("locker/", include("summers_api.locker.api.urls")),
+    path("tube2drive/", include("summers_api.tube2drive.api.urls")),
 ]
 urlpatterns += router.urls
