@@ -1,7 +1,9 @@
 """
 Base settings to build other settings files upon.
 """
+import json
 from pathlib import Path
+from typing import Dict
 
 import environ
 
@@ -268,6 +270,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Imgur API
 # TODO(summer): Add all supported image formats
 IMGUR_SUPPORTED_FORMAT = [
+    # image formats
+    "image/png",
+    "image/jpg",
+    "image/jpeg",
     # video formats
     "video/mp4",
     "video/webm",
@@ -278,3 +284,7 @@ IMGUR_SUPPORTED_FORMAT = [
     "video/x-ms-wmv",
     "video/mpeg",
 ]
+
+# GCP
+GCP_SERVICE_ACCOUNT_CONTENT: str = env("GCP_SERVICE_ACCOUNT_CONTENT")
+GCP_SERVICE_ACCOUNT_JSON: Dict[str, str] = json.loads(GCP_SERVICE_ACCOUNT_CONTENT)

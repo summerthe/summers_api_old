@@ -24,10 +24,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-          cache: pip
-          cache-dependency-path: |
-            requirements/base.txt
-            requirements/local.txt
+
+      - name: Install Python dependencies
+        uses: py-actions/py-dependency-install@v3
 
       - name: Run pre-commit
         uses: pre-commit/action@v2.0.3

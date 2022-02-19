@@ -274,3 +274,4 @@ summers_api/media/
 .env
 .envs/*
 !.envs/.local/
+gcp-service-account.json
