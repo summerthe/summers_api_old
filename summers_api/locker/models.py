@@ -9,7 +9,6 @@ from base.models import BaseModel
 User = get_user_model()
 
 
-# Create your models here.
 class Category(BaseModel):
 
     title = models.CharField(max_length=255)

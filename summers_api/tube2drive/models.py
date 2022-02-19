@@ -9,7 +9,6 @@ from base.models import BaseModel
 User = get_user_model()
 
 
-# Create your models here.
 class UploadRequest(BaseModel):
     START_CHOICE = "START"
     RUNNING_CHOICE = "RUNNING"

@@ -9,8 +9,14 @@ User = get_user_model()
 class UploadRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadRequest
-        fields = ("playlist_id", "folder_id")
-        read_only_fields = ("user",)
+        fields = "__all__"
+        read_only_fields = (
+            "id",
+            "status",
+            "user",
+            "guid",
+            "slug",
+        )
 
     def save(self, **kwargs):
         request = self.context.get("request")
