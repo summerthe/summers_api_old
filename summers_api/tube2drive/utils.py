@@ -1,3 +1,4 @@
+import json
 import multiprocessing
 import os
 import time
@@ -11,6 +12,7 @@ import requests
 import yt_dlp
 from celery.execute import send_task
 from django.conf import settings
+from django.urls import reverse_lazy
 from google.oauth2 import service_account
 from googleapiclient.http import MediaFileUpload
 
@@ -23,11 +25,17 @@ def find_playlist_and_upload(
     upload_request_id: int,
 ) -> None:
 
-    upload_request = UploadRequest.objects.get(pk=upload_request_id)
-    request_status = UploadRequest.RUNNING_CHOICE
-    upload_request.status = request_status
-    upload_request.save()
-    videos = fetch_youtube_video_ids(playlist_id)
+    # upload_request = UploadRequest.objects.get(pk=upload_request_id)
+    # request_status = UploadRequest.RUNNING_CHOICE
+    # upload_request.status = request_status
+    # upload_request.save()
+    # hit upload api to update upload request status
+    update_upload_request_status(upload_request_id, UploadRequest.RUNNING_CHOICE)
+    try:
+        videos = fetch_youtube_video_ids(playlist_id)
+    except Exception:
+        videos = []
+        traceback.print_exc()
 
     if videos is None or len(videos) == 0:
         request_status = UploadRequest.NOT_FOUND_CHOICE
@@ -69,7 +77,7 @@ def find_playlist_and_upload(
                 #   # request_status = UploadRequest.FAILED_CHOICE
                 #   # break
                 except Exception:
-                    pass
+                    traceback.print_exc()
                 finally:
                     os.remove(filename)
 
@@ -80,8 +88,8 @@ def find_playlist_and_upload(
         else:
             request_status = UploadRequest.COMPLETED_CHOICE
 
-    upload_request.status = request_status
-    upload_request.save()
+    # hit upload api to update upload request status
+    update_upload_request_status(upload_request_id, request_status)
 
 
 def fetch_youtube_video_ids(playlist_id: str) -> List[str]:
@@ -226,3 +234,17 @@ def ping_heroku_server():
     print("hosts", hosts)
     for host in filter(lambda k: "herokuapp.com" in k, hosts):
         requests.get(f"http://{host}")
+
+
+def update_upload_request_status(pk, status):
+    print(settings.CURRENT_DOMAIN, "CURRENT_DOMAIN")
+    url = settings.CURRENT_DOMAIN + reverse_lazy(
+        "api:summers_api.tube2drive:upload-requests-detail", kwargs={"pk": pk}
+    )
+
+    print("url", url)
+
+    payload = json.dumps({"status": status})
+    headers = {"App-Own": "", "Content-Type": "application/json"}
+
+    requests.request("PUT", url, headers=headers, data=payload)

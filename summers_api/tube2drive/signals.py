@@ -1,3 +1,4 @@
+import multiprocessing
 import random
 import traceback
 
@@ -15,10 +16,14 @@ def slugify_upload_request(sender, instance, *args, **kwargs):
         instance.slug = slugify(instance.playlist_id + str(random.randint(0, 9999)))
         instance.save()
         try:
-            check_task_to_find_playlist_and_upload(
-                instance.playlist_id,
-                instance.folder_id,
-                instance.pk,
+            main_proces = multiprocessing.Process(
+                target=check_task_to_find_playlist_and_upload,
+                args=(
+                    instance.playlist_id,
+                    instance.folder_id,
+                    instance.pk,
+                ),
             )
+            main_proces.start()
         except Exception:
             traceback.print_exc()

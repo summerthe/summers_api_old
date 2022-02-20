@@ -10,5 +10,9 @@ else:
 
 app_name = "summers_api.tube2drive"
 
-router.register("upload-requests", views.UploadRequestViewSet)
+router.register(
+    "upload-requests",
+    views.UploadRequestViewSet,
+    basename="upload-requests",
+)
 urlpatterns = router.urls

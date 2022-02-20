@@ -79,3 +79,13 @@ class BaseCreateListRetrieveModelViewSet(
     GenericViewSet,
 ):
     pass
+
+
+class BaseCreateListRetrieveUpdateModelViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    GenericViewSet,
+):
+    pass

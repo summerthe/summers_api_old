@@ -22,3 +22,9 @@ class UploadRequestSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         user = request.user
         return super().save(user=user)
+
+
+class UploadRequestUpdateStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadRequest
+        fields = ("status",)
