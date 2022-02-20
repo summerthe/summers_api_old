@@ -1,58 +1,87 @@
+import multiprocessing
 import os
+import time
 import traceback
 from typing import List
 
 import googleapiclient
 import googleapiclient.discovery
+import redis
+import requests
 import yt_dlp
+from celery.execute import send_task
 from django.conf import settings
 from google.oauth2 import service_account
 from googleapiclient.http import MediaFileUpload
 
+from summers_api.tube2drive.models import UploadRequest
 
-def find_playlist_and_upload(playlist_id: str, folder_id: str) -> None:
 
+def find_playlist_and_upload(
+    playlist_id: str,
+    folder_id: str,
+    upload_request_id: int,
+) -> None:
+
+    upload_request = UploadRequest.objects.get(pk=upload_request_id)
+    request_status = UploadRequest.RUNNING_CHOICE
+    upload_request.status = request_status
+    upload_request.save()
     videos = fetch_youtube_video_ids(playlist_id)
 
-    if not videos:
-        return
+    if videos is None or len(videos) == 0:
+        request_status = UploadRequest.NOT_FOUND_CHOICE
+    else:
+        scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
 
-    scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
+        youtube_api_service_name = "youtube"
+        youtube_api_version = "v3"
 
-    youtube_api_service_name = "youtube"
-    youtube_api_version = "v3"
+        credentials = service_account.Credentials.from_service_account_info(
+            settings.GCP_SERVICE_ACCOUNT_JSON,
+            scopes=scopes,
+        )
+        youtube_client = googleapiclient.discovery.build(
+            youtube_api_service_name,
+            youtube_api_version,
+            credentials=credentials,
+            cache_discovery=False,
+        )
 
-    credentials = service_account.Credentials.from_service_account_info(
-        settings.GCP_SERVICE_ACCOUNT_JSON,
-        scopes=scopes,
-    )
-    youtube_client = googleapiclient.discovery.build(
-        youtube_api_service_name,
-        youtube_api_version,
-        credentials=credentials,
-        cache_discovery=False,
-    )
+        counter = 1
+        for video in videos:
+            request = youtube_client.videos().list(part="snippet", id=video)
+            response = request.execute()
+            filename = "{}-{}".format(counter, response["items"][0]["snippet"]["title"])
+            filename = filename.replace("%", "per")
+            ydl_opts = {"outtmpl": filename}
 
-    counter = 1
-    for video in videos:
-        request = youtube_client.videos().list(part="snippet", id=video)
-        response = request.execute()
-        filename = "{}-{}".format(counter, response["items"][0]["snippet"]["title"])
-        filename = filename.replace("%", "per")
-        ydl_opts = {"outtmpl": filename}
+            try:
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download(["https://www.youtube.com/watch?v={}".format(video)])
 
-        try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download(["https://www.youtube.com/watch?v={}".format(video)])
+                if not os.path.exists(filename):
+                    filename += ".webm"
 
-            if not os.path.exists(filename):
-                filename += ".webm"
+                try:
+                    upload_to_drive(filename, folder_id)
+                # except PermissionError:
+                #   # request_status = UploadRequest.FAILED_CHOICE
+                #   # break
+                except Exception:
+                    pass
+                finally:
+                    os.remove(filename)
 
-            upload_to_drive(filename, folder_id)
-        except Exception:
-            traceback.print_exc()
+            except Exception:
+                traceback.print_exc()
 
-        counter += 1
+            counter += 1
+        else:
+            request_status = UploadRequest.COMPLETED_CHOICE
+
+    upload_request.status = request_status
+    upload_request.save()
 
 
 def fetch_youtube_video_ids(playlist_id: str) -> List[str]:
@@ -142,4 +171,58 @@ def upload_to_drive(
         body=file_metadata, media_body=media, fields="id"
     ).execute()
 
-    os.remove(filename)
+
+def check_task_to_find_playlist_and_upload(
+    playlist_id: str,
+    folder_id: str,
+    upload_request_pk: int,
+):
+    # check if redis is runing
+    try:
+        redis_host = settings.REDIS_URL
+        r = redis.Redis(
+            redis_host, socket_connect_timeout=1  # short timeout for the test
+        )
+        r.ping()
+        print("Redis is running")
+        send_task(
+            "tube2drive.tasks.run_find_playlist_and_upload",
+            args=(
+                playlist_id,
+                folder_id,
+                upload_request_pk,
+            ),
+        )
+    except redis.exceptions.ConnectionError:
+        print("Run process in backend")
+        # else run in background
+        # ping heroku on every 5 minutes so it dont turn off dyno
+
+        run_upload_process(playlist_id, folder_id, upload_request_pk)
+
+
+def run_upload_process(playlist_id: str, folder_id: str, upload_request_pk: int):
+    main_proces = multiprocessing.Process(
+        target=find_playlist_and_upload,
+        args=(
+            playlist_id,
+            folder_id,
+            upload_request_pk,
+        ),
+    )
+    main_proces.start()
+
+    while True:
+        if main_proces.is_alive():
+            time.sleep(300)
+            print("Hitting Heroku")
+            ping_heroku_server()
+        else:
+            break
+
+
+def ping_heroku_server():
+    hosts = settings.ALLOWED_HOSTS
+    print("hosts", hosts)
+    for host in filter(lambda k: "herokuapp.com" in k, hosts):
+        requests.get(f"http://{host}")

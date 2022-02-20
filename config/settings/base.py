@@ -251,6 +251,7 @@ CELERY_TASK_TIME_LIMIT = 5 * 60
 # TODO: set to whatever value is adequate in your circumstances
 CELERY_TASK_SOFT_TIME_LIMIT = 60
 
+REDIS_URL = env("REDIS_URL")
 
 # django-rest-framework
 # -------------------------------------------------------------------------------
