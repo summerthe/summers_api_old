@@ -24,4 +24,4 @@ google-api-core==2.3.0
 google-api-python-client==2.38.0
 
 # youtube-dl
-yt-dlp==2021.12.1
+yt-dlp==2022.2.4
