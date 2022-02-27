@@ -41,6 +41,6 @@ class UploadRequest(BaseModel):
         return self.playlist_id
 
     class Meta:
-        verbose_name = _("Category")
-        verbose_name_plural = _("Categories")
+        verbose_name = _("UploadRequest")
+        verbose_name_plural = _("UploadRequests")
         ordering = ["-updated_at"]

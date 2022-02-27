@@ -21,3 +21,8 @@ class User(AbstractUser, BaseModel):
 
     def __str__(self):
         return self.email
+
+    class Meta:
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
+        ordering = ["-updated_at"]
