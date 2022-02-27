@@ -25,10 +25,6 @@ def find_playlist_and_upload(
     upload_request_id: int,
 ) -> None:
 
-    # upload_request = UploadRequest.objects.get(pk=upload_request_id)
-    # request_status = UploadRequest.RUNNING_CHOICE
-    # upload_request.status = request_status
-    # upload_request.save()
     # hit upload api to update upload request status
     update_upload_request_status(upload_request_id, UploadRequest.RUNNING_CHOICE)
     try:
@@ -38,7 +34,7 @@ def find_playlist_and_upload(
         traceback.print_exc()
 
     if videos is None or len(videos) == 0:
-        request_status = UploadRequest.NOT_FOUND_CHOICE
+        request_status = UploadRequest.PLAYLIST_NOT_FOUND_CHOICE
     else:
         scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
 
@@ -73,9 +69,9 @@ def find_playlist_and_upload(
 
                 try:
                     upload_to_drive(filename, folder_id)
-                # except PermissionError:
-                #   # request_status = UploadRequest.FAILED_CHOICE
-                #   # break
+                except googleapiclient.errors.HttpError:
+                    request_status = UploadRequest.FOLDER_NOT_FOUND_CHOICE
+                    break
                 except Exception:
                     traceback.print_exc()
                 finally:

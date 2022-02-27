@@ -13,22 +13,22 @@ class UploadRequest(BaseModel):
     START_CHOICE = "START"
     RUNNING_CHOICE = "RUNNING"
     COMPLETED_CHOICE = "COMPLETED"
-    FAILED_CHOICE = "FAILED"
-    NOT_FOUND_CHOICE = "NOT_FOUND"
+    FOLDER_NOT_FOUND_CHOICE = "FOLDER_NOT_FOUND_CHOICE"
+    PLAYLIST_NOT_FOUND_CHOICE = "PLAYLIST_NOT_FOUND_CHOICE"
 
     STATUS_CHOICES = (
         (START_CHOICE, START_CHOICE),
         (RUNNING_CHOICE, RUNNING_CHOICE),
         (COMPLETED_CHOICE, COMPLETED_CHOICE),
-        (FAILED_CHOICE, FAILED_CHOICE),
-        (NOT_FOUND_CHOICE, NOT_FOUND_CHOICE),
+        (FOLDER_NOT_FOUND_CHOICE, FOLDER_NOT_FOUND_CHOICE),
+        (PLAYLIST_NOT_FOUND_CHOICE, PLAYLIST_NOT_FOUND_CHOICE),
     )
 
     playlist_id = models.CharField(max_length=255)
     folder_id = models.CharField(max_length=255)
     status = models.CharField(
         choices=STATUS_CHOICES,
-        max_length=9,
+        max_length=25,
         default=START_CHOICE,
         blank=True,
     )
