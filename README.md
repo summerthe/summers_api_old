@@ -26,7 +26,7 @@ This app comes with Celery.
 
 To run a celery worker:
 
-``` bash
+```bash
 cd summers_api
 celery -A config.celery_app worker -l info
 ```
